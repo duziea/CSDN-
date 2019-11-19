@@ -35,8 +35,18 @@ class csdn():
         获取总页数，返回
         '''
         page_list_js = "return document.getElementsByClassName('page-link').length"
-        pagell =  self.browser.execute_script(page_list_js)
+        pagell =  self.browser.execute_script(page_list_js)-1
         return pagell
+    
+    def next_page(self):
+        '''
+        获取下一页按钮的位置
+        切换到下一页
+        '''
+        page_list_js = "return document.getElementsByClassName('page-link').length"
+        l =  self.browser.execute_script(page_list_js)-1
+        next_page_js = f"return document.getElementsByClassName('page-link')[{l}].click()"
+        self.browser.execute_script(next_page_js)
 
     def get_article_list(self):
         '''
@@ -89,11 +99,15 @@ class csdn():
         '''
         self.login()
         pagell =  self.get_page_list()
-        for i in range(0,pagell):
+        c_page = 1
+        while c_page <= pagell:
             articlell = self.get_article_list()
             for i in range(0,articlell):
                 self.get_detail(i)
                 self.switch_window()
+            
+            self.next_page()
+            c_page += 1
 
         print('success download')
 
